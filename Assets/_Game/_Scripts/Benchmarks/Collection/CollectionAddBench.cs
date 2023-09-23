@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class AddCollection : BenchmarkBase
+public class CollectionAddBench : BenchmarkBase
 {
     private readonly HashSet<int> hashSet = new();
 
@@ -14,54 +14,44 @@ public class AddCollection : BenchmarkBase
     private readonly Dictionary<int, int> dict2 = new();
     private readonly Dictionary<int, int> dict3 = new();
 
-    private List<int> valueData = new();
-    private readonly List<Data> refData = new();
+    private List<int> data = new();
     
     protected override void Init()
     {
         BenchmarkName = $"Add to Collection";
         MaxRecommendedIterations = 10000;
 
-        for (int _i = 0; _i < MaxRecommendedIterations; _i++)
-        {
-            refData.Add(new Data()
-            {
-                Value = Random.Range(0, 1000000),
-                Value2 = Random.Range(0f, 1000000f)
-            });
-        }
-
-        valueData = Enumerable.Range(1, MaxRecommendedIterations).ToList();
+        data = Enumerable.Range(1, MaxRecommendedIterations).ToList();
         
         Benchmarks.Add(new BenchmarkData("Hashset.Add", () =>
         {
-            hashSet.Add(valueData[iterationIndex]);
+            hashSet.Add(data[iterationIndex]);
         }));
         
         Benchmarks.Add(new BenchmarkData("List.Add", () =>
         {
-            list1.Add(valueData[iterationIndex]);
+            list1.Add(data[iterationIndex]);
         }));
         
         Benchmarks.Add(new BenchmarkData("List.Add check not duplicates", () =>
         {
-            if (!list2.Contains(valueData[iterationIndex]))
-                list2.Add(valueData[iterationIndex]);
+            if (!list2.Contains(data[iterationIndex]))
+                list2.Add(data[iterationIndex]);
         }));
         
         Benchmarks.Add(new BenchmarkData("Dictionary.Add", () =>
         {
-            dict1.Add(iterationIndex, valueData[iterationIndex]);
+            dict1.Add(iterationIndex, data[iterationIndex]);
         }));
         
         Benchmarks.Add(new BenchmarkData("Dictionary.TryAdd", () =>
         {
-            dict2.TryAdd(iterationIndex, valueData[iterationIndex]);
+            dict2.TryAdd(iterationIndex, data[iterationIndex]);
         }));
         
         Benchmarks.Add(new BenchmarkData("Dictionary[n] = n", () =>
         {
-            dict3[iterationIndex] = valueData[iterationIndex];
+            dict3[iterationIndex] = data[iterationIndex];
         }));
     }
 
@@ -75,12 +65,6 @@ public class AddCollection : BenchmarkBase
         dict3.Clear();
         
         hashSet.Clear();
-    }
-    
-    public class Data
-    {
-        public int Value;
-        public float Value2;
     }
 }
 
