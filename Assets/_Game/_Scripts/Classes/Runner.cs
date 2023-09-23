@@ -41,8 +41,10 @@ public class Runner : MonoBehaviour {
         var builder = new StringBuilder();
         builder.Append($"<color=orange>{benchmark.BenchmarkName} x {Iterations}</color>\n");
         foreach (var result in benchmark.RunBenchmark(Iterations)) {
-            builder.Append($"{result.Name}: {result.Result}\n");
+            builder.Append($"{result.Name}: {result.Result} ms\n");
         }
+        
+        benchmark.OnBenchmarkEnd();
 
         _resultText.text = builder.ToString();
     }

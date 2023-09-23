@@ -6,24 +6,30 @@ using UnityEngine;
 /// <summary>
 /// I made this mono in case future tests required it
 /// </summary>
-public abstract class BenchmarkBase : MonoBehaviour {
+public abstract class BenchmarkBase : MonoBehaviour
+{
     public string BenchmarkName { get; protected set; }
     public int MaxRecommendedIterations { get; protected set; } = int.MaxValue;
     protected readonly List<BenchmarkData> Benchmarks = new();
 
-    public IEnumerable<BenchmarkData> RunBenchmark(int iterations) {
-        foreach (var benchmark in Benchmarks) {
+    protected int iterationIndex;
+    public IEnumerable<BenchmarkData> RunBenchmark(int iterations)
+    {
+        foreach (var benchmark in Benchmarks)
+        {
             yield return Run(benchmark);
         }
 
-        BenchmarkData Run(BenchmarkData data) {
+        BenchmarkData Run(BenchmarkData data)
+        {
             var watch = Stopwatch.StartNew();
-            for (var i = 0; i < iterations; i++) {
+            for (iterationIndex = 0; iterationIndex < iterations; iterationIndex++)
+            {
                 data.Action();
             }
 
             watch.Stop();
-            data.Result = watch.ElapsedMilliseconds;
+            data.Result = watch.Elapsed.TotalMilliseconds;
             return data;
         }
     }
@@ -31,14 +37,20 @@ public abstract class BenchmarkBase : MonoBehaviour {
     private void Awake() => Init();
 
     protected abstract void Init();
+
+    public virtual void OnBenchmarkEnd()
+    {
+    }
 }
 
-public struct BenchmarkData {
+public struct BenchmarkData
+{
     public readonly string Name;
     public readonly Action Action;
-    public long Result;
+    public double Result;
 
-    public BenchmarkData(string name, Action action) {
+    public BenchmarkData(string name, Action action)
+    {
         Name = name;
         Action = action;
         Result = 0;
