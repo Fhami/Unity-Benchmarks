@@ -5,84 +5,68 @@ using UnityEngine;
 
 public class AddCollection : BenchmarkBase
 {
-    //private const int COUNT = 30000;
+    private readonly HashSet<int> hashSet = new();
 
-    private const string Hash1 = "Hashset.Add";
+    private readonly List<int> list1 = new();
+    private readonly List<int> list2 = new();
 
-    private const string List1 = "List.Add";
-    private const string List2 = "List.Add check not duplicates";
+    private readonly Dictionary<int, int> dict1 = new();
+    private readonly Dictionary<int, int> dict2 = new();
+    private readonly Dictionary<int, int> dict3 = new();
 
-    private const string Dict1 = "Dictionary.Add";
-    private const string Dict2 = "Dictionary.TryAdd";
-    private const string Dict3 = "Dictionary[n] = n";
-
-    // private Dictionary<string, Dictionary<int, int>> dicts = new();
-    // private Dictionary<string, List<int>> lists = new();
-    private HashSet<int> hashSet = new();
-
-    protected List<int> list1 = new();
-    protected List<int> list2 = new();
-
-    protected Dictionary<int, int> dict1 = new();
-    protected Dictionary<int, int> dict2 = new();
-    protected Dictionary<int, int> dict3 = new();
-    
-    private List<int> data = new List<int>();
+    private List<int> valueData = new();
+    private readonly List<Data> refData = new();
     
     protected override void Init()
     {
         BenchmarkName = $"Add to Collection";
-        MaxRecommendedIterations = 20000;
+        MaxRecommendedIterations = 10000;
 
-        data = Enumerable.Range(1, MaxRecommendedIterations).ToList();
-        
-        //lists.Add(List1, new List<int>());
-        //lists.Add(List2, new List<int>());
-        
-        // dicts.Add(Dict1, new Dictionary<int, int>());
-        // dicts.Add(Dict2, new Dictionary<int, int>());
-        // dicts.Add(Dict3, new Dictionary<int, int>());
-        
-        Benchmarks.Add(new BenchmarkData(List1, () =>
+        for (int _i = 0; _i < MaxRecommendedIterations; _i++)
         {
-            list1.Add(data[iterationIndex]);
+            refData.Add(new Data()
+            {
+                Value = Random.Range(0, 1000000),
+                Value2 = Random.Range(0f, 1000000f)
+            });
+        }
+
+        valueData = Enumerable.Range(1, MaxRecommendedIterations).ToList();
+        
+        Benchmarks.Add(new BenchmarkData("Hashset.Add", () =>
+        {
+            hashSet.Add(valueData[iterationIndex]);
         }));
         
-        Benchmarks.Add(new BenchmarkData(List2, () =>
+        Benchmarks.Add(new BenchmarkData("List.Add", () =>
         {
-            if (!list2.Contains(data[iterationIndex]))
-                list2.Add(data[iterationIndex]);
+            list1.Add(valueData[iterationIndex]);
         }));
         
-        Benchmarks.Add(new BenchmarkData(Hash1, () =>
+        Benchmarks.Add(new BenchmarkData("List.Add check not duplicates", () =>
         {
-            hashSet.Add(data[iterationIndex]);
+            if (!list2.Contains(valueData[iterationIndex]))
+                list2.Add(valueData[iterationIndex]);
         }));
         
-        Benchmarks.Add(new BenchmarkData(Dict1, () =>
+        Benchmarks.Add(new BenchmarkData("Dictionary.Add", () =>
         {
-            dict1.Add(iterationIndex, data[iterationIndex]);
+            dict1.Add(iterationIndex, valueData[iterationIndex]);
         }));
         
-        Benchmarks.Add(new BenchmarkData(Dict2, () =>
+        Benchmarks.Add(new BenchmarkData("Dictionary.TryAdd", () =>
         {
-            dict2.TryAdd(iterationIndex, data[iterationIndex]);
+            dict2.TryAdd(iterationIndex, valueData[iterationIndex]);
         }));
         
-        Benchmarks.Add(new BenchmarkData(Dict3, () =>
+        Benchmarks.Add(new BenchmarkData("Dictionary[n] = n", () =>
         {
-            dict3[iterationIndex] = data[iterationIndex];
+            dict3[iterationIndex] = valueData[iterationIndex];
         }));
     }
 
     public override void OnBenchmarkEnd()
     {
-        // foreach (var _dict in dicts.Values)
-        //     _dict.Clear();
-        //
-        // foreach (var _list in lists.Values)
-        //     _list.Clear();
-        
         list1.Clear();
         list2.Clear();
         
@@ -91,6 +75,12 @@ public class AddCollection : BenchmarkBase
         dict3.Clear();
         
         hashSet.Clear();
+    }
+    
+    public class Data
+    {
+        public int Value;
+        public float Value2;
     }
 }
 
