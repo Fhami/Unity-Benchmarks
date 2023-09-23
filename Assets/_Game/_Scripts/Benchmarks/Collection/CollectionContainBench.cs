@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class CollectioContainnBench : BenchmarkBase
+public class CollectionContainBench : BenchmarkBase
 {
     private int[] array;
     private List<int> list;
